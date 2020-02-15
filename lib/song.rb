@@ -1,73 +1,53 @@
-class Song
-  attr_accessor :name, :artist_name
-  @@all = []
-
-  @@all = Array.new
+ self.class.all << self
+  end
 
   def self.create
-    new_song = self.new
-    new_song.save
-    return new_song
+    song = self.new
+    @@all << song
+    song
   end
 
-  def self.all
-    @@all
-  end
-
- 
-  def save
-    self.class.all << self
-  end
-
-end
   def self.new_by_name(song_name)
-    new_song = self.new
-    new_song.name = song_name
-    new_song   
-  end 
+    song = self.new 
+    song.name = song_name
+    song
+  end
 
   def self.create_by_name(song_name)
-    new_song = self.new
-    new_song.name = song_name
-    @@all << new_song
-    new_song
+    song = self.create
+    song.name = song_name
+    song
   end
 
   def self.find_by_name(song_name)
-    result = nil
-    @@all.each do |song|
-      result = song if song.name == song_name    
-    end
-    result  
+    self.all.find{|x| x.name == song_name}
   end
 
   def self.find_or_create_by_name(song_name)
-    if find_by_name(song_name) == nil
-      create_by_name(song_name)
-    else
-      find_by_name(song_name)
-    end
+    self.find_by_name(song_name) || self.create_by_name(song_name)
   end
 
   def self.alphabetical
-    @@all.sort_by {|song| song.name}
+    self.all.sort_by {|x| x.name}
   end
 
   def self.new_from_filename(filename)
-    filename = filename.split(" - ")
-    filename[1] = filename[1].chomp(".mp3")
+    data = filename.split(" - ")
+    name = data[1].chomp(".mp3")
+    artist = data[0]
     song = self.new
-    song.artist_name = filename[0]
-    song.name = filename[1]
+    song.name = name
+    song.artist_name = artist
     song
   end
 
   def self.create_from_filename(filename)
-    @@all << self.new_from_filename(filename)
+    name = self.new_from_filename(filename)
+    name.save
   end
 
   def self.destroy_all
-    @@all = Array.new
+    self.all.clear
   end
-end
 
+end
